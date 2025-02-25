@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 3001
 
 # Start the NestJS application
-CMD ["npm", "run", "start"]
+CMD ["yarn", "start"]
