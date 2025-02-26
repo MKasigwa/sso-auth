@@ -3,11 +3,13 @@ services:
     build: .
     container_name: sso_backed_app
     ports:
-      - '3000:3000'
+      - '3001:3001'
     depends_on:
       - db
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/sso_db
+      - PORT=3001
+      - NODE_ENV=development
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
