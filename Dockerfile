@@ -12,12 +12,6 @@ COPY . .
 
 RUN yarn install
 
-# Run a build command
-RUN yarn build
-
-# Delete the source folder
-RUN rm -rf ./src
-
 # Expose port 3001
 EXPOSE 3001
 
