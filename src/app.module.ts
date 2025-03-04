@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './auth/user.entity';
+import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
       synchronize: true, // Auto create tables (disable in production)
     }),
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
