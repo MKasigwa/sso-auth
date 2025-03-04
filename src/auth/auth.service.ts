@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../user/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync, hash } from 'bcrypt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<string | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userService.findOne(email);
     if (
       user &&
       (await (compareSync as (data: any, hash: any) => any)(
@@ -31,10 +30,9 @@ export class AuthService {
     const hashedPassword: string = (await (
       hash as (data: any, salt: any, cb?: any) => any
     )(password, 10)) as string;
-    const user = this.userRepository.create({
-      email,
-      password: hashedPassword,
-    });
-    return this.userRepository.save(user);
+    const user: User = new User();
+    user.email = email;
+    user.password = hashedPassword;
+    return this.userService.save(user);
   }
 }
