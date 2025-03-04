@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../user/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync, hash } from 'bcrypt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<string | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userService.findOne(email);
     if (
       user &&
       (await (compareSync as (data: any, hash: any) => any)(
@@ -27,14 +26,31 @@ export class AuthService {
     return null;
   }
 
-  async register(email: string, password: string): Promise<User> {
+  async register(
+    email: string,
+    password: string,
+    displayName: string,
+  ): Promise<User> {
     const hashedPassword: string = (await (
       hash as (data: any, salt: any, cb?: any) => any
     )(password, 10)) as string;
-    const user = this.userRepository.create({
-      email,
-      password: hashedPassword,
-    });
-    return this.userRepository.save(user);
+    const user: User = new User();
+    user.email = email;
+    user.password = hashedPassword;
+    user.displayName = displayName;
+    return this.userService.save(user);
+  }
+
+  async validateGoogleUser(email: string, displayName: string): Promise<User> {
+    let user = await this.userService.findOne(email);
+
+    if (!user) {
+      const userToSave: User = new User();
+      userToSave.email = email;
+      userToSave.password = '';
+      userToSave.displayName = displayName;
+      user = await this.userService.save(userToSave);
+    }
+    return user;
   }
 }
