@@ -10,6 +10,9 @@ services:
       - DATABASE_URL=postgresql://postgres:password@db:5432/sso_db
       - PORT=3001
       - NODE_ENV=development
+      - GOOGLE_CLIENTID=${GOOGLE_CLIENTID}
+      - GOOGLE_CLIENTSECRET=${GOOGLE_CLIENTSECRET}
+      - GOOGLE_CALLBACKURL=${GOOGLE_CALLBACKURL}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
