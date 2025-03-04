@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   UseGuards,
   Get,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -17,8 +18,9 @@ export class AuthController {
   async register(
     @Body('email') email: string,
     @Body('password') password: string,
+    @Body('displayName') displayName: string,
   ): Promise<any> {
-    return this.authService.register(email, password);
+    return this.authService.register(email, password, displayName);
   }
 
   @Post('login')
@@ -37,5 +39,22 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   getProfile() {
     return { message: 'This is a protected route!' };
+  }
+
+  // Redirect user to Google login
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async googleLogin(): Promise<any> {
+    return { message: 'Redirecting to Google...' };
+  }
+
+  // Google OAuth callback URL
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async googleRedirect(@Req() req): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    return { user: req.user };
   }
 }
