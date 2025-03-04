@@ -26,13 +26,31 @@ export class AuthService {
     return null;
   }
 
-  async register(email: string, password: string): Promise<User> {
+  async register(
+    email: string,
+    password: string,
+    displayName: string,
+  ): Promise<User> {
     const hashedPassword: string = (await (
       hash as (data: any, salt: any, cb?: any) => any
     )(password, 10)) as string;
     const user: User = new User();
     user.email = email;
     user.password = hashedPassword;
+    user.displayName = displayName;
     return this.userService.save(user);
+  }
+
+  async validateGoogleUser(email: string, displayName: string): Promise<User> {
+    let user = await this.userService.findOne(email);
+
+    if (!user) {
+      const userToSave: User = new User();
+      userToSave.email = email;
+      userToSave.password = '';
+      userToSave.displayName = displayName;
+      user = await this.userService.save(userToSave);
+    }
+    return user;
   }
 }
