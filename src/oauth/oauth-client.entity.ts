@@ -1,19 +1,16 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class User {
+export class OAuthClient {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ unique: true })
-  email: string;
+  clientId: string;
 
   @Column()
-  password: string;
+  clientSecret: string;
 
   @Column()
-  displayName: string;
-
-  @Column({ default: false })
-  isOAuthUser: boolean;
+  redirectUrl: string;
 }
