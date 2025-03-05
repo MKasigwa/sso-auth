@@ -9,10 +9,14 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
+import { OAuthService } from 'src/oauth/oauth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private oauthService: OAuthService,
+  ) {}
 
   @Post('register')
   async register(
@@ -21,6 +25,19 @@ export class AuthController {
     @Body('displayName') displayName: string,
   ): Promise<any> {
     return this.authService.register(email, password, displayName);
+  }
+
+  @Post('register-client')
+  async registerClient(
+    @Body('clientId') clientId: string,
+    @Body('clientSecret') clientSecret: string,
+    @Body('redirectUrl') redirectUrl: string,
+  ): Promise<any> {
+    return this.oauthService.registerClient(
+      clientId,
+      clientSecret,
+      redirectUrl,
+    );
   }
 
   @Post('login')
